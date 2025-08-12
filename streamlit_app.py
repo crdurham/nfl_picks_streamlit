@@ -8,6 +8,7 @@ from utils.football_stats import (load_seasonal_data,
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MaxNLocator
 from utils.db import register_user_if_needed
+from utils.data_retrieval import load_tracking_data_for_week
 
 stats = load_seasonal_data()[['Team','Season','Wins','Losses','Ties','Win Percentage','Points For','Points Against','Point Differential','Strength of Schedule','Playoffs']]
 teams_stats = stats['Team'].unique()
@@ -127,6 +128,10 @@ with st.container():
 
     with col6:
         play_id = st.selectbox("Play ID:", tracking_data["playId"].unique())
+
+if week is not None:
+        with st.spinner(f"Loading tracking data for week {week}..."):
+            tracking_data = load_tracking_data(team=team_gif, week=week)
 
 if st.button("Create GIF"):
         cola, colb, colc = st.columns([1,8,1])

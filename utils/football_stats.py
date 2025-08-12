@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation, PillowWriter
 import tempfile
 from pathlib import Path
+from utils.data_retrieval import load_tracking_data_for_week
 
 DATA_DIR = Path(__file__).parent.parent / "data"
 
@@ -32,7 +33,7 @@ def load_tracking_data(team="BUF", week=1):
     """
     games_df = load_games_data()
     team_games = games_df[(games_df["homeTeamAbbr"]==team) | (games_df["visitorTeamAbbr"]==team)]["gameId"].unique()
-    tracking_week_df = pd.read_csv(DATA_DIR/f"tracking_data/tracking_week_{week}.csv")
+    tracking_week_df = load_tracking_data_for_week(week)
 
     tracking_week_team_df = tracking_week_df[tracking_week_df['gameId'].isin(team_games)]
     return tracking_week_team_df
@@ -73,8 +74,9 @@ team_name_color_dict = {'BUF':[(0, 51/255, 141/255), (198/255, 12/255, 48/255)],
                         'SEA':[(0, 34/255, 68/255), (105/255, 190/255, 40/255)]}
 
 def animate_play(week=1, team="BUF", play_id=2137):
-    tracking_data = load_tracking_data(week=week, team=team)
-    play_tracking = tracking_data[tracking_data['playId'] == play_id]
+    tracking_data = load_tracking_data(week=week)
+    #tracking_data = tracking_data[tracking_data['club'] == team]
+    play_tracking = tracking_data[tracking_data['playId'] == play_id].copy()
 
     if play_tracking.empty:
         print(f"No tracking data located for given data.\n Please enter different combination of Week/Team/Play ID.")
@@ -146,3 +148,7 @@ def animate_play(week=1, team="BUF", play_id=2137):
 
     plt.close(fig)
     return gif_bytes
+
+
+
+
