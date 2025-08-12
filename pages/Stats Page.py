@@ -3,9 +3,10 @@ import pandas as pd
 import sqlite3
 from pathlib import Path
 from utils.schedule import (load_schedule, get_current_week)
+from utils.db import init_db, DB_PATH
 from datetime import datetime
 
-DB_PATH = Path("/Users/coledurham/streamlit-crash-course/data/picks.db")
+init_db()
 
 st.set_page_config(page_title="Leaderboard")
 
