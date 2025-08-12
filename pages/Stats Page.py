@@ -31,7 +31,7 @@ st.title("Leaderboard")
 @st.cache_data
 def load_picks(weeks):
     conn = sqlite3.connect(DB_PATH)
-    df = pd.read_sql_query("SELECT * FROM picks WHERE Status = 'submitted' AND Week <= ?", 
+    df = pd.read_sql_query("SELECT * FROM picks WHERE Status = 'submitted'", 
                            conn,
                            params=(weeks,))
     conn.close()
