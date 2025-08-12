@@ -88,7 +88,8 @@ if save_picks:
         cursor.execute("""
             DELETE FROM picks WHERE UserEmail = ? AND Week = ? AND Home = ? AND Away = ? AND Status = 'saved'
         """, (user_email, week, home, away))
-
+        conn.commit()
+        
         cursor.execute("""
             INSERT INTO picks (Week, Home, Away, UserEmail, Pick, TimeStamp, Status)
             VALUES (?, ?, ?, ?, ?, ?, 'saved')
