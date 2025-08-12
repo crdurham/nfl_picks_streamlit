@@ -23,7 +23,7 @@ def load_seasonal_data():
 
 
 def load_games_data():
-    games_df = pd.read_csv(DATA_DIR/"games.csv")
+    games_df = pd.read_csv(DATA_DIR/"tracking_data/games.csv")
     return games_df
 
 def load_tracking_data(team="BUF", week=1):
@@ -32,7 +32,7 @@ def load_tracking_data(team="BUF", week=1):
     """
     games_df = load_games_data()
     team_games = games_df[(games_df["homeTeamAbbr"]==team) | (games_df["visitorTeamAbbr"]==team)]["gameId"].unique()
-    tracking_week_df = pd.read_csv(DATA_DIR/f"tracking_week_{week}.csv")
+    tracking_week_df = pd.read_csv(DATA_DIR/f"tracking_data/tracking_week_{week}.csv")
 
     tracking_week_team_df = tracking_week_df[tracking_week_df['gameId'].isin(team_games)]
     return tracking_week_team_df
