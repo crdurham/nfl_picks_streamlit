@@ -29,17 +29,18 @@ st.title("Leaderboard")
 
 # Load data
 @st.cache_data
-def load_picks(weeks):
+def load_picks(max_week):
     conn = sqlite3.connect(DB_PATH)
-    df = pd.read_sql_query("SELECT * FROM picks WHERE Status = 'submitted'", 
-                           conn
-                           )
+    df = pd.read_sql_query(
+        "SELECT * FROM picks WHERE Status = 'submitted' AND Week <= ?",
+        conn,
+        params=(max_week,)
+    )
     conn.close()
     return df
 
 df = load_picks(week)
 
-# Display
 if not df.empty:
     df['Week'] = df['Week'].astype(int)
     selectable_weeks = sorted(df['Week'].unique())
@@ -47,7 +48,6 @@ if not df.empty:
 
     df_week = df[df['Week'] == selected_week]
 
-    # (Optionally) drop columns from display
     st.dataframe(df_week)
 else:
     st.info("No picks submitted yet.")
