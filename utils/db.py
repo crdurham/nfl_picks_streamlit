@@ -4,6 +4,7 @@ from oauth2client.service_account import ServiceAccountCredentials
 import pandas as pd
 import sqlite3
 from pathlib import Path
+from datetime import datetime
 
 DB_PATH = Path(__file__).parent.parent / "data" / "picks.db"
 DB_PATH.parent.mkdir(parents=True, exist_ok=True)
@@ -156,6 +157,7 @@ def update_game_results(conn, week, home, away, home_score, away_score, status="
     """, (week, home, away, home_score, away_score, winner, status, timestamp))
 
     conn.commit()
+    conn.close()
 
 def clear_picks_db():
     conn = get_connection()
@@ -164,3 +166,30 @@ def clear_picks_db():
 
     conn.commit()
     conn.close()
+
+
+def finalize_picks_for_week(conn, week):
+    cursor = conn.cursor()
+
+    # Delete submitted picks for that week first to avoid PK conflict
+    cursor.execute("""
+        DELETE FROM picks
+        WHERE Week = ? AND Status = 'submitted'
+          AND EXISTS (
+            SELECT 1 FROM picks AS saved_picks
+            WHERE saved_picks.Week = picks.Week
+              AND saved_picks.Home = picks.Home
+              AND saved_picks.Away = picks.Away
+              AND saved_picks.UserEmail = picks.UserEmail
+              AND saved_picks.Status = 'saved'
+          )
+    """, (week,))
+
+    # Then update saved picks to submitted
+    cursor.execute("""
+        UPDATE picks
+        SET Status = 'submitted', TimeStamp = ?
+        WHERE Week = ? AND Status = 'saved'
+    """, (datetime.now().isoformat(), week))
+
+    conn.commit()

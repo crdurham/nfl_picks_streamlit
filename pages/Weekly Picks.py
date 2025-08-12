@@ -96,6 +96,7 @@ if save_picks:
         """, (week, home, away, user_email, pick, datetime.now().isoformat()))
     
     conn.commit()
+    conn.close()
     st.success("Picks saved.")
 
 
@@ -126,5 +127,6 @@ if submit_picks:
             """, (week, home, away, user_email, pick, datetime.now().isoformat()))
     
     conn.commit()
+    conn.close()
     st.success("Picks submitted.")
 
