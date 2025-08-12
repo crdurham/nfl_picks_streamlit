@@ -25,6 +25,6 @@ def get_current_week(season_start_date, week_duration_days=7):
     #if days_since_start < 0:
         #return 0
     
-    week = (days_since_start // week_duration_days)
+    week = (days_since_start // week_duration_days) + 1
 
     return week
