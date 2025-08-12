@@ -76,28 +76,36 @@ with st.form(f"picks_form_week_{week}", width="content"):
 
 
 if save_picks:
-    for game_label, pick in user_picks.items():
-        game_label_base = game_label.split(' (')[0]
-        if " @ " in game_label_base:
-            away, home = game_label_base.split(" @ ")
-        else:
-            st.error(f"Could not parse matchup: {game_label_base}")
-            continue
+    # Check if user already submitted picks for this week
+    cursor.execute("""
+        SELECT 1 FROM picks
+        WHERE UserEmail = ? AND Week = ? AND Status = 'submitted'
+        LIMIT 1
+    """, (user_email, week))
+    if cursor.fetchone():
+        st.error("You cannot save picks because you have already submitted picks for this week.")
+    else:
+        # Proceed to save picks
+        for game_label, pick in user_picks.items():
+            game_label_base = game_label.split(' (')[0]
+            if " @ " in game_label_base:
+                away, home = game_label_base.split(" @ ")
+            else:
+                st.error(f"Could not parse matchup: {game_label_base}")
+                continue
 
+            cursor.execute("""
+                DELETE FROM picks WHERE UserEmail = ? AND Week = ? AND Home = ? AND Away = ? AND Status = 'saved'
+            """, (user_email, week, home, away))
+            conn.commit()
 
-        cursor.execute("""
-            DELETE FROM picks WHERE UserEmail = ? AND Week = ? AND Home = ? AND Away = ? AND Status = 'saved'
-        """, (user_email, week, home, away))
+            cursor.execute("""
+                INSERT INTO picks (Week, Home, Away, UserEmail, Pick, TimeStamp, Status)
+                VALUES (?, ?, ?, ?, ?, ?, 'saved')
+            """, (week, home, away, user_email, pick, datetime.now().isoformat()))
+
         conn.commit()
-
-        cursor.execute("""
-            INSERT INTO picks (Week, Home, Away, UserEmail, Pick, TimeStamp, Status)
-            VALUES (?, ?, ?, ?, ?, ?, 'saved')
-        """, (week, home, away, user_email, pick, datetime.now().isoformat()))
-    
-    conn.commit()
-    conn.close()
-    st.success("Picks saved.")
+        st.success("Picks saved.")
 
 
 if submit_picks:
