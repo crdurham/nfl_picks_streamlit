@@ -5,7 +5,8 @@ import pandas as pd
 import sqlite3
 from pathlib import Path
 
-DB_PATH = Path("/Users/coledurham/streamlit-crash-course/data/picks.db")
+DB_PATH = Path(__file__).parent.parent / "data" / "picks.db"
+DB_PATH.parent.mkdir(parents=True, exist_ok=True)
 
 def get_connection():
     return sqlite3.connect(DB_PATH, check_same_thread=False)

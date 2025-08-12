@@ -7,8 +7,10 @@ from utils.football_stats import (load_seasonal_data,
                                   animate_play)
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MaxNLocator
-from utils.db import register_user_if_needed
+from utils.db import (register_user_if_needed, init_db)
 from utils.data_retrieval import load_tracking_data_for_week
+
+init_db()
 
 stats = load_seasonal_data()[['Team','Season','Wins','Losses','Ties','Win Percentage','Points For','Points Against','Point Differential','Strength of Schedule','Playoffs']]
 teams_stats = stats['Team'].unique()
