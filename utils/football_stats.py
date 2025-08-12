@@ -74,7 +74,7 @@ team_name_color_dict = {'BUF':[(0, 51/255, 141/255), (198/255, 12/255, 48/255)],
                         'SEA':[(0, 34/255, 68/255), (105/255, 190/255, 40/255)]}
 
 def animate_play(week=1, team="BUF", play_id=2137):
-    tracking_data = load_tracking_data(week=week)
+    tracking_data = load_tracking_data(team=team, week=week)
     #tracking_data = tracking_data[tracking_data['club'] == team]
     play_tracking = tracking_data[tracking_data['playId'] == play_id].copy()
 
